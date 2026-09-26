@@ -3,8 +3,8 @@
 <header data-public-nav class="sticky top-0 z-40 border-b border-zinc-200 bg-white transition duration-200">
     <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-8 md:py-4">
         <a href="{{ route('home') }}" class="group flex items-center gap-2.5">
-            @if ($school && $school->logo)
-                <img src="{{ asset('storage/'.$school->logo) }}" alt="{{ $school->name }}" class="h-9 w-9 rounded-lg object-cover ring-1 ring-zinc-200">
+            @if ($school?->logoUrl())
+                <img src="{{ $school->logoUrl() }}" alt="{{ $school->name }}" width="36" height="36" class="h-9 w-9 rounded-lg object-cover ring-1 ring-zinc-200">
             @else
                 <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-900 text-white">
                     <x-icon name="graduation" class="h-5 w-5" />
@@ -42,8 +42,8 @@
                 </form>
             @else
                 <a href="{{ route('login') }}" class="rounded-lg px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100">Login</a>
-                <a href="{{ route('register') }}" class="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800 active:scale-95">
-                    Daftar
+                <a href="{{ route('login') }}" class="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800 active:scale-95">
+                    Masuk Siswa
                 </a>
             @endauth
         </div>
@@ -81,7 +81,7 @@
                 </form>
             @else
                 <a data-public-nav-link href="{{ route('login') }}" class="rounded-lg px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100">Login</a>
-                <a data-public-nav-link href="{{ route('register') }}" class="rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white">Daftar</a>
+                <a data-public-nav-link href="{{ route('login') }}" class="rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white">Masuk Siswa</a>
             @endauth
         </div>
     </div>

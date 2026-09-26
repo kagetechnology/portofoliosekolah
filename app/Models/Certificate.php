@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 #[Fillable(['user_id', 'title', 'certificate_number', 'slug', 'issuer', 'issue_date', 'file', 'approval_status'])]
@@ -47,7 +48,9 @@ class Certificate extends Model
 
     public function fileUrl(): ?string
     {
-        return $this->file ? asset('storage/'.$this->file) : null;
+        return $this->file && Storage::disk('public')->exists($this->file)
+            ? asset('storage/'.$this->file)
+            : null;
     }
 
     public function isImage(): bool

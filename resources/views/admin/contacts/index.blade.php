@@ -2,24 +2,22 @@
 @section('title', 'Pesan Masuk')
 
 @section('content')
-    <header class="mb-6 flex items-end justify-between">
-        <div>
-            <p class="text-xs font-semibold uppercase tracking-widest text-blue-600">Kotak Masuk</p>
-            <h1 class="font-display text-3xl font-bold tracking-tight text-zinc-900">Pesan</h1>
-            <p class="mt-1 text-sm text-zinc-500">Pesan dari perusahaan dan stakeholder.</p>
-        </div>
+    <header class="mb-6 rounded-[2rem] border border-zinc-200 bg-zinc-950 p-6 text-white shadow-sm">
+        <p class="text-xs font-semibold uppercase tracking-[0.28em] text-blue-200">Kotak masuk</p>
+        <h1 class="font-display mt-3 text-4xl font-bold tracking-tight md:text-5xl">Pesan perusahaan</h1>
+        <p class="mt-2 max-w-2xl text-sm text-zinc-300">Semua pesan dari halaman publik masuk ke sini untuk ditindaklanjuti admin.</p>
     </header>
 
-    <div class="mb-4 inline-flex rounded-lg border border-zinc-200 bg-white p-1 text-sm">
+    <div class="mb-4 inline-flex rounded-full border border-zinc-200 bg-white p-1 text-sm shadow-sm">
         <a href="{{ route('admin.contacts.index') }}"
-           class="rounded-md px-3 py-1.5 transition {{ $filter === '' ? 'bg-zinc-900 text-white' : 'text-zinc-700 hover:bg-zinc-50' }}">Semua</a>
+           class="rounded-full px-3 py-1.5 transition {{ $filter === '' ? 'bg-zinc-900 text-white' : 'text-zinc-700 hover:bg-zinc-50' }}">Semua</a>
         <a href="{{ route('admin.contacts.index', ['filter' => 'unread']) }}"
-           class="rounded-md px-3 py-1.5 transition {{ $filter === 'unread' ? 'bg-zinc-900 text-white' : 'text-zinc-700 hover:bg-zinc-50' }}">Belum Dibaca</a>
+           class="rounded-full px-3 py-1.5 transition {{ $filter === 'unread' ? 'bg-zinc-900 text-white' : 'text-zinc-700 hover:bg-zinc-50' }}">Belum Dibaca</a>
         <a href="{{ route('admin.contacts.index', ['filter' => 'read']) }}"
-           class="rounded-md px-3 py-1.5 transition {{ $filter === 'read' ? 'bg-zinc-900 text-white' : 'text-zinc-700 hover:bg-zinc-50' }}">Sudah Dibaca</a>
+           class="rounded-full px-3 py-1.5 transition {{ $filter === 'read' ? 'bg-zinc-900 text-white' : 'text-zinc-700 hover:bg-zinc-50' }}">Sudah Dibaca</a>
     </div>
 
-    <div class="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
+    <div class="overflow-hidden rounded-[1.75rem] border border-zinc-200 bg-white shadow-sm">
         <ul class="divide-y divide-zinc-100">
             @forelse ($contacts as $c)
                 <li class="group transition hover:bg-zinc-50 {{ $c->is_read ? '' : 'bg-blue-50/40' }}">

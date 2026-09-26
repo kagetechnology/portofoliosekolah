@@ -2,18 +2,18 @@
 @section('title', $contact->subject)
 
 @section('content')
-    <a href="{{ route('admin.contacts.index') }}" class="mb-4 inline-flex items-center gap-2 text-sm text-zinc-600 hover:text-blue-600">
+    <a href="{{ route('admin.contacts.index') }}" class="mb-4 inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-3 py-1.5 text-sm text-zinc-600 hover:text-blue-600">
         <x-icon name="arrow-left" class="h-4 w-4" /> Kembali ke Kotak Masuk
     </a>
 
-    <article class="rounded-2xl border border-zinc-200 bg-white">
+    <article class="rounded-[1.75rem] border border-zinc-200 bg-white shadow-sm">
         <header class="border-b border-zinc-100 p-6">
             <div class="flex items-start gap-3">
-                <span class="mt-1 flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-700">
+                <span class="mt-1 flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-100 text-blue-700">
                     <x-icon name="mail" class="h-5 w-5" />
                 </span>
                 <div class="flex-1">
-                    <h1 class="font-display text-2xl font-bold tracking-tight text-zinc-900">{{ $contact->subject }}</h1>
+                    <h1 class="font-display text-3xl font-bold tracking-tight text-zinc-950">{{ $contact->subject }}</h1>
                     <p class="mt-1 text-sm text-zinc-600">Dari <strong class="text-zinc-900">{{ $contact->sender_name }}</strong>
                         @if ($contact->sender_company) — {{ $contact->sender_company }} @endif
                     </p>
@@ -42,7 +42,7 @@
                 @endif
             </div>
 
-            <div class="rounded-xl border border-zinc-200 bg-white p-5">
+            <div class="rounded-2xl border border-zinc-200 bg-zinc-50 p-5">
                 <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">Pesan</p>
                 <p class="whitespace-pre-line text-sm leading-relaxed text-zinc-800">{{ $contact->message }}</p>
             </div>

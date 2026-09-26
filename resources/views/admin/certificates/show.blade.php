@@ -2,26 +2,26 @@
 @section('title', 'Review Sertifikat')
 
 @section('content')
-    <header class="mb-6 flex flex-wrap items-start justify-between gap-3">
+    <header class="mb-6 flex flex-wrap items-start justify-between gap-3 rounded-[2rem] border border-zinc-200 bg-white p-6 shadow-sm">
         <div>
-            <a href="{{ route('admin.certificates.index') }}" class="inline-flex items-center gap-2 text-sm text-zinc-600 hover:text-blue-600">
+            <a href="{{ route($routePrefix.'.certificates.index') }}" class="inline-flex items-center gap-2 text-sm text-zinc-600 hover:text-blue-600">
                 <x-icon name="arrow-left" class="h-4 w-4" /> Kembali
             </a>
             <div class="mt-3 flex flex-wrap items-center gap-2">
-                <h1 class="font-display text-3xl font-bold tracking-tight text-zinc-900">{{ $certificate->title }}</h1>
+                <h1 class="font-display text-4xl font-bold tracking-tight text-zinc-950 md:text-5xl">{{ $certificate->title }}</h1>
                 <x-badge :variant="$certificate->approval_status === 'approved' ? 'success' : ($certificate->approval_status === 'rejected' ? 'danger' : 'warning')">{{ ucfirst($certificate->approval_status) }}</x-badge>
             </div>
             <p class="mt-1 text-sm text-zinc-500">Review sertifikat sebelum tampil publik.</p>
         </div>
         <div class="flex flex-wrap gap-2">
             @if ($certificate->approval_status !== 'approved')
-                <form method="POST" action="{{ route('admin.certificates.approve', $certificate) }}">
+                <form method="POST" action="{{ route($routePrefix.'.certificates.approve', $certificate) }}">
                     @csrf @method('PATCH')
                     <x-button type="submit" variant="primary"><x-icon name="check" class="h-4 w-4" /> Setujui</x-button>
                 </form>
             @endif
             @if ($certificate->approval_status !== 'rejected')
-                <form method="POST" action="{{ route('admin.certificates.reject', $certificate) }}">
+                <form method="POST" action="{{ route($routePrefix.'.certificates.reject', $certificate) }}">
                     @csrf @method('PATCH')
                     <button class="inline-flex items-center gap-2 rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50">Tolak</button>
                 </form>
@@ -30,7 +30,7 @@
     </header>
 
     <div class="grid gap-6 lg:grid-cols-3">
-        <article class="lg:col-span-2 overflow-hidden rounded-2xl border border-zinc-200 bg-white">
+        <article class="lg:col-span-2 overflow-hidden rounded-[1.75rem] border border-zinc-200 bg-white shadow-sm">
             @if ($certificate->file && $certificate->isImage())
                 <div class="aspect-[16/10] bg-zinc-100">
                     <img src="{{ $certificate->fileUrl() }}" alt="" class="h-full w-full object-contain bg-zinc-50">
@@ -51,7 +51,7 @@
         </article>
 
         <aside class="space-y-5 lg:sticky lg:top-24 lg:self-start">
-            <section class="rounded-2xl border border-zinc-200 bg-white p-5">
+            <section class="rounded-[1.75rem] border border-zinc-200 bg-white p-5 shadow-sm">
                 <h2 class="mb-3 text-sm font-semibold uppercase tracking-wider text-zinc-500">Siswa</h2>
                 <div class="flex items-center gap-3">
                     <img src="{{ $certificate->user->avatarUrl() }}" alt="" class="h-12 w-12 rounded-xl object-cover ring-1 ring-zinc-200">
@@ -62,7 +62,7 @@
                 </div>
             </section>
 
-            <section class="rounded-2xl border border-zinc-200 bg-white p-5">
+            <section class="rounded-[1.75rem] border border-zinc-200 bg-white p-5 shadow-sm">
                 <h2 class="mb-3 text-sm font-semibold uppercase tracking-wider text-zinc-500">Detail Sertifikat</h2>
                 <dl class="space-y-3 text-sm">
                     <div><dt class="text-xs text-zinc-500">Nomor</dt><dd class="font-mono font-medium text-zinc-900">{{ $certificate->certificate_number ?: '—' }}</dd></div>

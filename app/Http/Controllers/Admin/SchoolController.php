@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\School;
+use App\Support\ImageOptimizer;
 use App\Support\RichText;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,7 +15,8 @@ class SchoolController extends Controller
 {
     public function edit(): View
     {
-        $school = School::current() ?? new School();
+        $school = School::current() ?? new School;
+
         return view('admin.school.edit', compact('school'));
     }
 
@@ -31,7 +33,8 @@ class SchoolController extends Controller
             'mission' => ['nullable', 'string'],
             'kepala_sekolah' => ['nullable', 'string', 'max:150'],
             'npsn' => ['nullable', 'string', 'max:20'],
-            'logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'student_default_password' => ['required', 'string', 'min:8', 'max:100'],
+            'logo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
         ]);
 
         $school = School::current() ?? new School(['name' => $data['name']]);
@@ -40,7 +43,13 @@ class SchoolController extends Controller
             if ($school->logo) {
                 Storage::disk('public')->delete($school->logo);
             }
-            $data['logo'] = $request->file('logo')->store('school', 'public');
+            $data['logo'] = ImageOptimizer::optimizeAndStore(
+                $request->file('logo'),
+                'school',
+                600,
+                600,
+                85
+            );
         }
 
         foreach (['description', 'vision', 'mission'] as $field) {

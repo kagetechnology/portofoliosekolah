@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Siswa;
 
 use App\Http\Controllers\Controller;
+use App\Support\ImageOptimizer;
 use App\Support\RichText;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -23,10 +25,12 @@ class ProfileController extends Controller
         $user = $request->user();
 
         $data = $request->validate([
+            'email' => ['required', 'email', 'max:150', Rule::unique('users', 'email')->ignore($user)],
             'bio' => ['nullable', 'string', 'max:1000'],
             'github_url' => ['nullable', 'url', 'max:255'],
             'instagram_url' => ['nullable', 'url', 'max:255'],
-            'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'linkedin_url' => ['nullable', 'url', 'max:255'],
+            'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'remove_avatar' => ['nullable', 'boolean'],
         ]);
 
@@ -39,7 +43,13 @@ class ProfileController extends Controller
             if ($user->avatar) {
                 Storage::disk('public')->delete($user->avatar);
             }
-            $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
+            $data['avatar'] = ImageOptimizer::optimizeAndStore(
+                $request->file('avatar'),
+                'avatars',
+                400,
+                400,
+                85
+            );
         } else {
             unset($data['avatar']);
         }

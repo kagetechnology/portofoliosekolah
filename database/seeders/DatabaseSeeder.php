@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
         User::updateOrCreate(
             ['email' => 'siswa@sekolah.test'],
             [
+                'nisn' => '0000000001',
                 'name' => 'Siswa Contoh',
                 'password' => Hash::make('password'),
                 'role' => 'siswa',
@@ -33,6 +34,17 @@ class DatabaseSeeder extends Seeder
                 'school_class' => 'XII RPL 1',
                 'email_verified_at' => now(),
                 'bio' => 'Suka web dev & UI design.',
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'guru@sekolah.test'],
+            [
+                'name' => 'Guru Contoh',
+                'password' => Hash::make('password'),
+                'role' => 'guru',
+                'status' => 'active',
+                'email_verified_at' => now(),
             ]
         );
 

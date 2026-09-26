@@ -7,6 +7,7 @@ use App\Models\Portfolio;
 use App\Models\Skill;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class PortfolioController extends Controller
@@ -46,19 +47,37 @@ class PortfolioController extends Controller
 
     public function show(Portfolio $portfolio): View
     {
-        $portfolio->load(['user.portfolios', 'skills']);
+        $portfolio->load(['user.portfolios', 'skills', 'acceptedContributors'])->loadAvg('ratings', 'rating')->loadCount('ratings');
         abort_unless($portfolio->isApproved(), 404);
         $portfolio->increment('views');
 
-        return view('public.portfolios.show', compact('portfolio'));
+        return view('public.portfolios.show', ['portfolio' => $portfolio, 'isPreview' => false]);
+    }
+
+    public function preview(Portfolio $portfolio): View
+    {
+        $portfolio->load(['user.portfolios', 'skills', 'acceptedContributors'])->loadAvg('ratings', 'rating')->loadCount('ratings');
+
+        return view('public.portfolios.show', ['portfolio' => $portfolio, 'isPreview' => true]);
     }
 
     public function byUser(User $user): View
     {
         abort_unless($user->isSiswa() && $user->isActive(), 404);
-        $portfolios = $user->portfolios()->where('approval_status', 'approved')->with('skills')->latest()->paginate(12);
+        $portfolioQuery = $user->visiblePortfolios()->where('approval_status', 'approved');
+        $portfolioIds = (clone $portfolioQuery)->pluck('portfolios.id');
+        $portfolios = $portfolioQuery
+            ->with('skills')
+            ->latest()
+            ->paginate(12);
         $certificates = $user->certificates()->where('approval_status', 'approved')->latest()->get();
-        $skillSummary = $user->skillSummary();
+        $skillSummary = DB::table('skills')
+            ->join('portfolio_skill', 'skills.id', '=', 'portfolio_skill.skill_id')
+            ->whereIn('portfolio_skill.portfolio_id', $portfolioIds)
+            ->groupBy('skills.id', 'skills.name')
+            ->selectRaw('skills.id, skills.name, AVG(portfolio_skill.level) as avg_level, COUNT(DISTINCT portfolio_skill.portfolio_id) as used_in')
+            ->orderByDesc('avg_level')
+            ->get();
 
         return view('public.portfolios.user', compact('user', 'portfolios', 'certificates', 'skillSummary'));
     }

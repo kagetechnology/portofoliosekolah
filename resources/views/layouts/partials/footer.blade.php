@@ -41,7 +41,7 @@
         <nav class="md:col-span-3">
             <p class="text-xs font-semibold uppercase tracking-widest text-zinc-500">Untuk Siswa</p>
             <ul class="mt-3 space-y-2 text-sm">
-                <li><a href="{{ route('register') }}" class="hover:text-blue-400">Daftar Akun</a></li>
+                <li><a href="{{ route('login') }}" class="hover:text-blue-400">Akun Siswa</a></li>
                 <li><a href="{{ route('login') }}" class="hover:text-blue-400">Login</a></li>
             </ul>
         </nav>
@@ -59,7 +59,7 @@
     <div class="border-t border-white/10 bg-black/30">
         <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-4 text-xs text-zinc-500 md:px-8">
             <p>&copy; {{ date('Y') }} {{ $school?->name ?? config('app.name') }}. All rights reserved.</p>
-            <p>Student Showcase Platform · v1.0</p>
+            <p>Student Showcase Platform · v{{ config('app.version') }}</p>
         </div>
     </div>
 </footer>

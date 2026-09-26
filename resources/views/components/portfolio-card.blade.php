@@ -4,7 +4,7 @@
    class="group relative block overflow-hidden rounded-2xl border border-zinc-200 bg-white transition duration-200 hover:border-zinc-300 hover:shadow-xl hover:-translate-y-0.5">
 
     <div class="relative aspect-[4/3] overflow-hidden bg-zinc-100">
-        <img src="{{ $portfolio->coverUrl() }}" alt="{{ $portfolio->title }}"
+        <img src="{{ $portfolio->coverUrl() }}" alt="{{ $portfolio->title }}" loading="lazy" decoding="async"
              class="h-full w-full object-cover transition duration-500 ease-out group-hover:scale-105" />
         <div class="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/40 to-transparent"></div>
         @if ($featured)

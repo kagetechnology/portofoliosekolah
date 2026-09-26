@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Siswa;
 
 use App\Http\Controllers\Controller;
 use App\Models\Certificate;
+use App\Support\ImageOptimizer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -25,11 +26,17 @@ class CertificateController extends Controller
             'certificate_number' => ['nullable', 'string', 'max:100'],
             'issuer' => ['nullable', 'string', 'max:150'],
             'issue_date' => ['nullable', 'date'],
-            'file' => ['nullable', 'file', 'max:4096', 'mimes:pdf,jpg,jpeg,png,webp'],
+            'file' => ['nullable', 'file', 'max:10240', 'mimes:pdf,jpg,jpeg,png,webp'],
         ]);
 
         if ($request->hasFile('file')) {
-            $data['file'] = $request->file('file')->store('certificates', 'public');
+            $data['file'] = ImageOptimizer::optimizeAndStore(
+                $request->file('file'),
+                'certificates',
+                1800,
+                1800,
+                85
+            );
         }
         $data['user_id'] = $request->user()->id;
         $data['approval_status'] = 'pending';

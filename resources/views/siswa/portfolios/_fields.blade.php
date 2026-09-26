@@ -1,7 +1,5 @@
 @php
     $p = $portfolio ?? new \App\Models\Portfolio();
-    $selectedSkills = $selectedSkills ?? [];
-    $selectedLevels = $selectedLevels ?? [];
 @endphp
 
 <div class="grid gap-4 md:grid-cols-2">
@@ -11,7 +9,12 @@
     </div>
     <div>
         <label class="block text-sm font-medium">Kategori</label>
-        <input name="category" value="{{ old('category', $p->category) }}" placeholder="Web, Mobile, IoT, dst." class="mt-1 w-full rounded border-slate-300 px-3 py-2 text-sm">
+        <select name="category" class="mt-1 w-full rounded border-slate-300 px-3 py-2 text-sm">
+            <option value="">Pilih kategori</option>
+            @foreach (($categories ?? collect()) as $category)
+                <option value="{{ $category->name }}" @selected(old('category', $p->category) === $category->name)>{{ $category->name }}</option>
+            @endforeach
+        </select>
     </div>
     <div>
         <label class="block text-sm font-medium">Cover Image (max 2MB)</label>
@@ -37,32 +40,3 @@
         Tampilkan di beranda (Unggulan)
     </label>
 </div>
-
-<fieldset class="mt-6 rounded border border-slate-200 p-4">
-    <legend class="px-2 text-sm font-medium">Skills</legend>
-    <div id="skill-list" class="space-y-2">
-        @forelse ($skills as $skill)
-            @php $checked = in_array($skill->id, $selectedSkills); @endphp
-            <div class="flex items-center gap-3 text-sm">
-                <label class="flex flex-1 items-center gap-2">
-                    <input type="checkbox" name="skill_names[]" value="{{ $skill->name }}" @checked($checked)>
-                    {{ $skill->name }}
-                </label>
-                <select name="skill_levels[{{ $skill->id }}]" class="rounded border-slate-300 px-2 py-1 text-xs">
-                    @for ($i = 1; $i <= 5; $i++)
-                        <option value="{{ $i }}" @selected(($selectedLevels[$skill->id] ?? 0) == $i)>{{ $i }}</option>
-                    @endfor
-                </select>
-            </div>
-        @empty
-            <p class="text-sm text-slate-400">Belum ada skill di master. Tambah di bawah.</p>
-        @endforelse
-    </div>
-    <details class="mt-3 text-sm">
-        <summary class="cursor-pointer text-brand-600">+ Tambah skill baru</summary>
-        <div id="new-skill-rows" class="mt-2 space-y-1">
-            <input name="skill_names[]" placeholder="contoh: React" class="rounded border-slate-300 px-3 py-1 text-sm">
-            <input name="skill_names[]" placeholder="contoh: Laravel" class="rounded border-slate-300 px-3 py-1 text-sm">
-        </div>
-    </details>
-</fieldset>

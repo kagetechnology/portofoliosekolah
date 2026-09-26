@@ -116,11 +116,12 @@
                     <div class="grid gap-4 sm:grid-cols-2">
                         @foreach ($students as $u)
                             @php
-                                $skillsList = $u->skillSummary();
+                                $skillsList = $skillSummaries->get($u->id, collect());
+                                $portfolioCount = $u->owned_portfolios_count + $u->contributed_portfolios_count;
                             @endphp
                             <a href="{{ route('portfolios.user', $u) }}" class="group flex flex-col rounded-2xl border border-zinc-200 bg-white p-5 transition hover:border-zinc-300 hover:shadow-md hover:-translate-y-0.5">
                                 <div class="flex items-start gap-4">
-                                    <img src="{{ $u->avatarUrl() }}" alt="" class="h-14 w-14 rounded-2xl object-cover ring-1 ring-zinc-200">
+                                    <img src="{{ $u->avatarUrl() }}" alt="" loading="lazy" decoding="async" class="h-14 w-14 rounded-2xl object-cover ring-1 ring-zinc-200">
                                     <div class="min-w-0 flex-1">
                                         <h3 class="font-display text-base font-bold text-zinc-900 group-hover:text-blue-600">{{ $u->name }}</h3>
                                         <p class="text-xs text-zinc-500">
@@ -149,7 +150,7 @@
                                 @endif
 
                                 <div class="mt-4 flex items-center justify-between border-t border-zinc-100 pt-3 text-xs">
-                                    <span class="text-zinc-500">{{ $u->portfolios_count }} karya</span>
+                                    <span class="text-zinc-500">{{ $portfolioCount }} karya</span>
                                     <x-icon name="arrow-right" class="h-4 w-4 text-zinc-400 transition group-hover:translate-x-1 group-hover:text-blue-600" />
                                 </div>
                             </a>

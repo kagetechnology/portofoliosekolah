@@ -8,11 +8,14 @@ use DOMNode;
 
 class RichText
 {
-    private const ALLOWED_TAGS = ['div', 'p', 'br', 'strong', 'b', 'em', 'i', 'u', 'ul', 'ol', 'li', 'blockquote', 'a', 'img'];
+    private const ALLOWED_TAGS = ['div', 'p', 'br', 'strong', 'b', 'em', 'i', 'u', 'ul', 'ol', 'li', 'blockquote', 'a', 'img', 'figure', 'figcaption', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'iframe'];
 
     private const ALLOWED_ATTRIBUTES = [
         'a' => ['href', 'target', 'rel'],
         'img' => ['src', 'alt'],
+        'th' => ['colspan', 'rowspan'],
+        'td' => ['colspan', 'rowspan'],
+        'iframe' => ['src', 'width', 'height', 'allow', 'allowfullscreen', 'frameborder'],
     ];
 
     public static function clean(?string $html): ?string
@@ -90,11 +93,25 @@ class RichText
         if ($tag === 'img' && ! self::isSafeUrl($element->getAttribute('src'))) {
             self::unwrap($element);
         }
+
+        if ($tag === 'iframe') {
+            if (! self::isSafeEmbedUrl($element->getAttribute('src'))) {
+                self::unwrap($element);
+                return;
+            }
+            $element->setAttribute('loading', 'lazy');
+            $element->setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+        }
     }
 
     private static function isSafeUrl(string $url): bool
     {
         return (bool) preg_match('/^https?:\/\//i', trim($url));
+    }
+
+    private static function isSafeEmbedUrl(string $url): bool
+    {
+        return (bool) preg_match('/^https:\/\/(www\.)?(youtube\.com\/embed\/|youtube-nocookie\.com\/embed\/|player\.vimeo\.com\/video\/)/i', trim($url));
     }
 
     private static function unwrap(DOMElement $element): void

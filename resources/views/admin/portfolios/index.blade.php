@@ -2,15 +2,13 @@
 @section('title', 'Manajemen Portofolio')
 
 @section('content')
-    <header class="mb-6 flex items-end justify-between">
-        <div>
-            <p class="text-xs font-semibold uppercase tracking-widest text-blue-600">Admin</p>
-            <h1 class="font-display text-3xl font-bold tracking-tight text-zinc-900">Portofolio</h1>
-            <p class="mt-1 text-sm text-zinc-500">Setujui atau tolak karya sebelum tampil publik.</p>
-        </div>
+    <header class="mb-6 rounded-[2rem] border border-zinc-200 bg-white p-6 shadow-sm">
+        <p class="text-xs font-semibold uppercase tracking-[0.28em] text-blue-600">Review karya</p>
+        <h1 class="font-display mt-3 text-4xl font-bold tracking-tight text-zinc-950 md:text-5xl">Portofolio</h1>
+        <p class="mt-2 max-w-2xl text-sm text-zinc-500">Setujui atau tolak karya sebelum tampil publik.</p>
     </header>
 
-    <form method="GET" class="mb-5 grid gap-3 rounded-2xl border border-zinc-200 bg-white p-4 md:grid-cols-[1fr_180px]">
+    <form method="GET" class="mb-5 grid gap-3 rounded-[1.75rem] border border-zinc-200 bg-white p-4 shadow-sm md:grid-cols-[minmax(0,1fr)_180px]">
         <div class="relative">
             <x-icon name="search" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
             <input name="q" value="{{ $q }}" placeholder="Cari judul / siswa..."
@@ -24,12 +22,12 @@
         </select>
     </form>
 
-    <div class="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
+    <div class="overflow-hidden rounded-[1.75rem] border border-zinc-200 bg-white shadow-sm">
         <ul class="divide-y divide-zinc-100">
             @forelse ($portfolios as $p)
                 <li class="flex flex-wrap items-center gap-4 p-4 transition hover:bg-zinc-50">
-                    <div class="h-14 w-20 shrink-0 overflow-hidden rounded-lg bg-zinc-100">
-                        <img src="{{ $p->coverUrl() }}" alt="" class="h-full w-full object-cover">
+                    <div class="h-16 w-24 shrink-0 overflow-hidden rounded-2xl bg-zinc-100">
+                        <img src="{{ $p->coverUrl() }}" alt="" loading="lazy" decoding="async" class="h-full w-full object-cover">
                     </div>
                     <div class="min-w-0 flex-1">
                         <div class="flex flex-wrap items-center gap-2">
@@ -45,26 +43,21 @@
                         <span class="inline-flex items-center gap-1 text-xs text-zinc-500" title="{{ $p->views }} kali dilihat">
                             <x-icon name="eye" class="h-3 w-3" /> {{ $p->views ?: 0 }}
                         </span>
-                        <a href="{{ route('admin.portfolios.show', $p) }}" class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 px-3 py-1.5 text-xs font-medium text-zinc-700 transition hover:bg-zinc-50">
+                        <a href="{{ route($routePrefix.'.portfolios.show', $p) }}" class="inline-flex items-center gap-1.5 rounded-full border border-zinc-300 px-3 py-1.5 text-xs font-medium text-zinc-700 transition hover:bg-zinc-50">
                             Review
                         </a>
+                        <a href="{{ route($routePrefix.'.portfolios.edit', $p) }}" class="inline-flex items-center gap-1.5 rounded-full border border-zinc-300 px-3 py-1.5 text-xs font-medium text-zinc-700 transition hover:bg-zinc-50">
+                            <x-icon name="pencil" class="h-3 w-3" /> Edit
+                        </a>
                         @if ($p->approval_status !== 'approved')
-                            <form method="POST" action="{{ route('admin.portfolios.approve', $p) }}">
+                            <form method="POST" action="{{ route($routePrefix.'.portfolios.approve', $p) }}">
                                 @csrf @method('PATCH')
                                 <button class="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 px-3 py-1.5 text-xs font-medium text-emerald-700 transition hover:bg-emerald-50">
                                     <x-icon name="check" class="h-3 w-3" /> Setujui
                                 </button>
                             </form>
                         @endif
-                        @if ($p->approval_status !== 'rejected')
-                            <form method="POST" action="{{ route('admin.portfolios.reject', $p) }}">
-                                @csrf @method('PATCH')
-                                <button class="inline-flex items-center gap-1.5 rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-50">
-                                    Tolak
-                                </button>
-                            </form>
-                        @endif
-                        @if ($p->isApproved())
+                        @if ($routePrefix === 'admin' && $p->isApproved())
                             <form method="POST" action="{{ route('admin.portfolios.featured', $p) }}">
                                 @csrf @method('PATCH')
                                 <button class="inline-flex items-center gap-1.5 rounded-lg border {{ $p->is_featured ? 'border-amber-300 bg-amber-50 text-amber-800' : 'border-zinc-300 text-zinc-700' }} px-3 py-1.5 text-xs font-medium transition hover:bg-zinc-50">
@@ -76,12 +69,14 @@
                                 <x-icon name="external" class="h-3 w-3" /> Lihat
                             </a>
                         @endif
+                        @if ($routePrefix === 'admin')
                         <form method="POST" action="{{ route('admin.portfolios.destroy', $p) }}" onsubmit="return confirm('Hapus portofolio ini permanen?')">
                             @csrf @method('DELETE')
                             <button class="inline-flex items-center gap-1.5 rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 transition hover:bg-red-50">
                                 <x-icon name="trash" class="h-3 w-3" />
                             </button>
                         </form>
+                        @endif
                     </div>
                 </li>
             @empty

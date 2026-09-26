@@ -2,20 +2,20 @@
 @section('title', 'Sertifikat Saya')
 
 @section('content')
-    <header class="mb-6 flex flex-wrap items-end justify-between gap-4">
+    <header class="mb-6 flex flex-wrap items-end justify-between gap-4 rounded-[2rem] border border-zinc-200 bg-white p-6 shadow-sm">
         <div>
-            <p class="text-xs font-semibold uppercase tracking-widest text-blue-600">Kredensial</p>
-            <h1 class="font-display text-3xl font-bold tracking-tight text-zinc-900">Sertifikat</h1>
+            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-blue-600">Kredensial</p>
+            <h1 class="font-display mt-3 text-4xl font-bold tracking-tight text-zinc-950 md:text-5xl">Sertifikat</h1>
             <p class="mt-1 text-sm text-zinc-500">Sertifikat baru tampil publik setelah disetujui admin.</p>
         </div>
         <a href="{{ route('portfolios.user', auth()->user()) }}" target="_blank"
-           class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-800 transition hover:bg-zinc-50">
+           class="inline-flex items-center gap-2 rounded-full border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-800 transition hover:bg-zinc-50">
             <x-icon name="external" class="h-4 w-4" /> Lihat di Publik
         </a>
     </header>
 
     <div class="grid gap-6 lg:grid-cols-3">
-        <section class="rounded-2xl border border-zinc-200 bg-white p-6 lg:col-span-1 lg:sticky lg:top-24 lg:self-start">
+        <section class="rounded-[1.75rem] border border-zinc-200 bg-white p-6 shadow-sm lg:col-span-1 lg:sticky lg:top-24 lg:self-start">
             <h2 class="mb-4 text-sm font-semibold uppercase tracking-wider text-zinc-500">Tambah Sertifikat</h2>
             <form method="POST" action="{{ route('siswa.certificates.store') }}" enctype="multipart/form-data" class="space-y-4">
                 @csrf
@@ -45,7 +45,7 @@
                     <label class="block text-sm font-medium text-zinc-800">File</label>
                     <input type="file" name="file" accept=".pdf,image/jpeg,image/png,image/webp"
                            class="w-full text-sm file:mr-3 file:rounded-md file:border-0 file:bg-zinc-900 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-zinc-800">
-                    <p class="text-xs text-zinc-500">PDF / JPG / PNG, maks 4MB.</p>
+                    <p class="text-xs text-zinc-500">PDF / JPG / PNG / WebP hingga 10MB.</p>
                     @error('file') <p class="text-xs text-red-600">{{ $message }}</p> @enderror
                 </div>
                 <x-button type="submit" variant="primary" class="w-full">
@@ -58,7 +58,7 @@
             @if ($certificates->count())
                 <div class="grid gap-4 sm:grid-cols-2">
                     @foreach ($certificates as $c)
-                        <article class="overflow-hidden rounded-2xl border border-zinc-200 bg-white transition hover:border-zinc-300 hover:shadow-md">
+                        <article class="overflow-hidden rounded-[1.75rem] border border-zinc-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-lg">
                             <div class="block">
                                 @if ($c->file && $c->isImage())
                                     <div class="aspect-[16/10] bg-zinc-100">

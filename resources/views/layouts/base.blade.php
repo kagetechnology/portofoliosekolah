@@ -7,31 +7,7 @@
     <meta name="theme-color" content="#18181b">
     <title>@yield('title', 'Portofolio Sekolah')</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap">
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Archivo', 'system-ui', 'sans-serif'],
-                        display: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
-                    },
-                    colors: {
-                        ink: { DEFAULT: '#09090b', soft: '#18181b', line: '#e4e4e7' },
-                        brand: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' },
-                    },
-                    boxShadow: {
-                        soft: '0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -12px rgb(24 24 27 / 0.12)',
-                        ring: '0 0 0 4px rgb(24 24 27 / 0.06)',
-                    }
-                }
-            }
-        };
-    </script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <script>
         // === Vanilla JS sidebar (no Alpine dependency) ===
@@ -130,7 +106,7 @@
                 window.addEventListener('scroll', function () {
                     nav.classList.toggle('bg-white/85', window.scrollY > 8);
                     nav.classList.toggle('backdrop-blur', window.scrollY > 8);
-                    nav.classList.toggle('shadow-soft', window.scrollY > 8);
+                    nav.classList.toggle('shadow-sm', window.scrollY > 8);
                     nav.classList.toggle('border-zinc-200/80', window.scrollY > 8);
                 }, { passive: true });
             }
@@ -140,43 +116,142 @@
                 initPublicNav();
                 initRichEditors();
                 initImagePreviews();
+                initProjectTypes();
+                initContributorPickers();
+                initShareButtons();
             }
 
             function initRichEditors() {
-                document.querySelectorAll('[data-rich-editor]').forEach(function (root) {
-                    var content = root.querySelector('[data-rich-content]');
-                    var textarea = root.querySelector('textarea');
-                    if (!content || !textarea || root.dataset.ready) return;
-                    root.dataset.ready = '1';
+                var textareas = document.querySelectorAll('textarea[data-ckeditor]');
+                if (!textareas.length) return;
 
-                    function sync() { textarea.value = content.innerHTML.trim(); }
-                    root.querySelectorAll('[data-rich-command]').forEach(function (button) {
-                        button.addEventListener('click', function () {
-                            content.focus();
-                            document.execCommand(button.dataset.richCommand, false, button.dataset.richValue || null);
-                            sync();
+                function start() {
+                    textareas.forEach(function (textarea) {
+                        if (textarea.dataset.ready) return;
+                        textarea.dataset.ready = '1';
+
+                        var wrapper = textarea.closest('[data-rich-editor-wrapper]');
+                        var minLength = wrapper ? Number(wrapper.dataset.minLength || 0) : 0;
+                        var counterEl = wrapper ? wrapper.querySelector('[data-char-count]') : null;
+                        var counterStatusEl = wrapper ? wrapper.querySelector('[data-counter-status]') : null;
+                        var templateBtn = wrapper ? wrapper.querySelector('[data-insert-template]') : null;
+                        var activeEditor = null;
+
+                        function countPlainChars(html) {
+                            var tmp = document.createElement('div');
+                            tmp.innerHTML = html || '';
+                            var text = (tmp.textContent || tmp.innerText || '').replace(/[\s\u00a0]+/g, ' ').trim();
+                            return text.length;
+                        }
+
+                        function updateCount() {
+                            if (!activeEditor) return;
+                            var data = activeEditor.getData();
+                            var len = countPlainChars(data);
+                            if (counterEl) {
+                                counterEl.textContent = len;
+                            }
+                            if (counterStatusEl && minLength > 0) {
+                                if (len >= minLength) {
+                                    counterStatusEl.innerHTML = '<span class="inline-flex items-center gap-1 font-semibold text-emerald-700"><svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> Sesuai syarat (' + len + ' karakter)</span>';
+                                } else {
+                                    var diff = minLength - len;
+                                    counterStatusEl.innerHTML = '<span class="font-medium text-amber-700">Kurang ' + diff + ' karakter</span>';
+                                }
+                            }
+                            textarea.value = data;
+                        }
+
+                        if (templateBtn) {
+                            templateBtn.addEventListener('click', function () {
+                                if (!activeEditor) return;
+                                var templateHtml = [
+                                    '<h3>1. Latar Belakang & Masalah</h3>',
+                                    '<p>Jelaskan latar belakang pembuatan karya ini, siapa target penggunanya, dan masalah nyata yang ingin Anda selesaikan.</p>',
+                                    '<h3>2. Solusi & Fitur Utama</h3>',
+                                    '<p>Jabarkan fitur-fitur penting yang Anda buat. Anda dapat menyisipkan screenshot alur aplikasi atau video demo di bagian ini.</p>',
+                                    '<h3>3. Peran & Kontribusi</h3>',
+                                    '<p>Jelaskan tanggung jawab spesifik Anda (misalnya desain antarmuka, arsitektur basis data, backend API, atau pengujian).</p>',
+                                    '<h3>4. Tantangan Teknis & Hasil</h3>',
+                                    '<p>Ceritakan kendala teknis yang dihadapi selama implementasi, cara mengatasinya, dan hasil pengujian karya.</p>'
+                                ].join('');
+
+                                var current = activeEditor.getData();
+                                var count = countPlainChars(current);
+                                if (count <= 20 || confirm('Sisipkan kerangka struktur ke dalam deskripsi?')) {
+                                    activeEditor.setData(count > 20 ? current + '<hr>' + templateHtml : templateHtml);
+                                    updateCount();
+                                }
+                            });
+                        }
+
+                        ClassicEditor.create(textarea, {
+                            toolbar: [
+                                'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList',
+                                'blockQuote', 'insertTable', 'imageUpload', 'mediaEmbed', 'undo', 'redo'
+                            ],
+                            image: {
+                                toolbar: ['imageTextAlternative', 'toggleImageCaption', 'imageStyle:inline', 'imageStyle:block', 'imageStyle:side']
+                            },
+                            mediaEmbed: {
+                                previewsInData: true
+                            }
+                        }).then(function (editor) {
+                            activeEditor = editor;
+                            editor.plugins.get('FileRepository').createUploadAdapter = function (loader) {
+                                return new CkUploadAdapter(loader);
+                            };
+
+                            editor.model.document.on('change:data', updateCount);
+                            updateCount();
+
+                            var form = textarea.closest('form');
+                            if (form) {
+                                form.addEventListener('submit', function () {
+                                    textarea.value = editor.getData();
+                                });
+                            }
+                        }).catch(function (error) {
+                            console.error(error);
                         });
                     });
-                    var link = root.querySelector('[data-rich-link]');
-                    if (link) link.addEventListener('click', function () {
-                        var url = prompt('URL link (https://...)');
-                        if (!url) return;
-                        content.focus();
-                        document.execCommand('createLink', false, url);
-                        sync();
-                    });
-                    var image = root.querySelector('[data-rich-image]');
-                    if (image) image.addEventListener('click', function () {
-                        var url = prompt('URL gambar (https://...)');
-                        if (!url) return;
-                        content.focus();
-                        document.execCommand('insertImage', false, url);
-                        sync();
-                    });
-                    content.addEventListener('input', sync);
-                    if (content.closest('form')) content.closest('form').addEventListener('submit', sync);
-                });
+                }
+
+                if (window.ClassicEditor) {
+                    start();
+                    return;
+                }
+
+                var script = document.createElement('script');
+                script.src = 'https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js';
+                script.async = true;
+                script.onload = start;
+                document.head.appendChild(script);
             }
+
+            function CkUploadAdapter(loader) {
+                this.loader = loader;
+            }
+            CkUploadAdapter.prototype.upload = function () {
+                return this.loader.file.then(function (file) {
+                    var data = new FormData();
+                    data.append('upload', file);
+                    return fetch('{{ route('editor.upload') }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        },
+                        body: data
+                    }).then(function (response) {
+                        if (!response.ok) throw new Error('Upload gagal');
+                        return response.json();
+                    }).then(function (result) {
+                        return { default: result.url };
+                    });
+                });
+            };
+            CkUploadAdapter.prototype.abort = function () {};
 
             function initImagePreviews() {
                 document.querySelectorAll('[data-image-preview-input]').forEach(function (input) {
@@ -185,6 +260,187 @@
                     input.dataset.ready = '1';
                     input.addEventListener('change', function () {
                         if (input.files && input.files[0]) image.src = URL.createObjectURL(input.files[0]);
+                    });
+                });
+            }
+
+            function initProjectTypes() {
+                document.querySelectorAll('[data-project-type]').forEach(function (select) {
+                    var fields = select.closest('form')?.querySelector('[data-team-fields]');
+                    if (!fields) return;
+                    function sync() { fields.classList.toggle('hidden', select.value !== 'team'); }
+                    select.addEventListener('change', sync);
+                    sync();
+                });
+            }
+
+            function initContributorPickers() {
+                document.querySelectorAll('[data-contributor-picker]').forEach(function (picker) {
+                    if (picker.dataset.ready) return;
+                    picker.dataset.ready = '1';
+
+                    var search = picker.querySelector('[data-contributor-search]');
+                    var options = Array.from(picker.querySelectorAll('[data-contributor-option]'));
+                    var count = picker.querySelector('[data-contributor-count]');
+                    var selectedWrap = picker.querySelector('[data-contributor-selected-wrap]');
+                    var selectedList = picker.querySelector('[data-contributor-selected]');
+                    var empty = picker.querySelector('[data-contributor-empty]');
+                    var limitMessage = picker.querySelector('[data-contributor-limit]');
+                    var max = Number(picker.dataset.max || 20);
+                    var debounceTimer;
+                    var controller;
+
+                    function bindOption(option) {
+                        option.querySelector('input[type="checkbox"]').addEventListener('change', render);
+                    }
+
+                    options.forEach(bindOption);
+
+                    function selectedOptions() {
+                        return options.filter(function (option) {
+                            return option.querySelector('input[type="checkbox"]').checked;
+                        });
+                    }
+
+                    function render() {
+                        var selected = selectedOptions();
+                        count.textContent = selected.length + ' / ' + max + ' dipilih';
+                        selectedWrap.classList.toggle('hidden', selected.length === 0);
+                        limitMessage.classList.toggle('hidden', selected.length < max);
+                        selectedList.replaceChildren();
+
+                        selected.forEach(function (option) {
+                            var checkbox = option.querySelector('input[type="checkbox"]');
+                            var name = option.querySelector('[data-contributor-name]').textContent.trim();
+                            var chip = document.createElement('button');
+                            chip.type = 'button';
+                            chip.className = 'inline-flex max-w-full items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-blue-800 ring-1 ring-blue-200 hover:bg-blue-100';
+                            chip.setAttribute('aria-label', 'Hapus ' + name + ' dari anggota tim');
+                            chip.textContent = name + ' ×';
+                            chip.addEventListener('click', function () {
+                                checkbox.checked = false;
+                                render();
+                            });
+                            selectedList.appendChild(chip);
+                        });
+
+                        options.forEach(function (option) {
+                            var checkbox = option.querySelector('input[type="checkbox"]');
+                            checkbox.disabled = !checkbox.checked && selected.length >= max;
+                            option.classList.toggle('opacity-50', checkbox.disabled);
+                            option.classList.toggle('cursor-not-allowed', checkbox.disabled);
+                            option.querySelector('[data-selected-label]').classList.toggle('hidden', !checkbox.checked);
+                        });
+                    }
+
+                    function createOption(student) {
+                        var existing = options.find(function (option) {
+                            return option.querySelector('input').value === String(student.id);
+                        });
+                        if (existing) return existing;
+
+                        var option = document.createElement('div');
+                        option.className = 'relative flex items-center gap-3 border-b border-zinc-100 px-3 py-2.5 transition last:border-b-0 hover:bg-blue-50 has-[:checked]:bg-blue-50';
+                        option.dataset.contributorOption = '';
+
+                        var input = document.createElement('input');
+                        input.id = 'contributor-' + student.id;
+                        input.type = 'checkbox';
+                        input.name = 'contributor_ids[]';
+                        input.value = student.id;
+                        input.className = 'h-4 w-4 shrink-0 rounded border-zinc-300 text-blue-600 focus:ring-blue-600';
+
+                        var label = document.createElement('label');
+                        label.htmlFor = input.id;
+                        label.className = 'absolute inset-0 cursor-pointer';
+                        label.setAttribute('aria-label', 'Pilih ' + student.name);
+
+                        var avatar = document.createElement('span');
+                        avatar.className = 'pointer-events-none flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-xs font-bold text-zinc-600';
+                        avatar.textContent = student.name.charAt(0);
+
+                        var details = document.createElement('span');
+                        details.className = 'pointer-events-none min-w-0 flex-1';
+                        var name = document.createElement('span');
+                        name.className = 'block truncate text-sm font-medium text-zinc-900';
+                        name.dataset.contributorName = '';
+                        name.textContent = student.name;
+                        var schoolClass = document.createElement('span');
+                        schoolClass.className = 'block truncate text-xs text-zinc-500';
+                        schoolClass.textContent = student.school_class || 'Kelas belum diatur';
+                        details.append(name, schoolClass);
+
+                        var selectedLabel = document.createElement('span');
+                        selectedLabel.className = 'pointer-events-none hidden text-xs font-semibold text-blue-700';
+                        selectedLabel.dataset.selectedLabel = '';
+                        selectedLabel.textContent = 'Dipilih';
+
+                        option.append(input, label, avatar, details, selectedLabel);
+                        bindOption(option);
+                        options.push(option);
+                        return option;
+                    }
+
+                    function showResults(students, message) {
+                        picker.querySelectorAll('[data-contributor-option]').forEach(function (option) {
+                            option.classList.add('hidden');
+                        });
+                        students.forEach(function (student) {
+                            var option = createOption(student);
+                            option.classList.remove('hidden');
+                            empty.before(option);
+                        });
+                        empty.textContent = message || 'Tidak ada siswa yang cocok.';
+                        empty.classList.toggle('hidden', students.length !== 0);
+                        render();
+                    }
+
+                    search.addEventListener('input', function () {
+                        clearTimeout(debounceTimer);
+                        var query = search.value.trim();
+                        if (query.length < 2) {
+                            if (controller) controller.abort();
+                            showResults([], 'Ketik minimal 2 karakter untuk mencari siswa.');
+                            return;
+                        }
+
+                        empty.textContent = 'Mencari siswa...';
+                        empty.classList.remove('hidden');
+                        debounceTimer = setTimeout(function () {
+                            if (controller) controller.abort();
+                            controller = new AbortController();
+                            fetch(picker.dataset.searchUrl + '?q=' + encodeURIComponent(query), {
+                                headers: { 'Accept': 'application/json' },
+                                signal: controller.signal
+                            }).then(function (response) {
+                                if (!response.ok) throw new Error('Pencarian siswa gagal');
+                                return response.json();
+                            }).then(function (students) {
+                                showResults(students);
+                            }).catch(function (error) {
+                                if (error.name !== 'AbortError') showResults([], 'Pencarian gagal. Coba lagi.');
+                            });
+                        }, 250);
+                    });
+                    render();
+                });
+            }
+
+            function initShareButtons() {
+                document.querySelectorAll('[data-share-url]').forEach(function (button) {
+                    button.addEventListener('click', async function () {
+                        var original = button.textContent;
+                        var data = { title: button.dataset.shareTitle, text: button.dataset.shareText, url: button.dataset.shareUrl };
+                        try {
+                            if (navigator.share) await navigator.share(data);
+                            else {
+                                await navigator.clipboard.writeText(data.url);
+                                button.textContent = 'Link tersalin';
+                                setTimeout(function () { button.textContent = original; }, 1800);
+                            }
+                        } catch (error) {
+                            if (error.name !== 'AbortError') console.error(error);
+                        }
                     });
                 });
             }
@@ -214,6 +470,12 @@
         .rich-content ul { list-style: disc; }
         .rich-content ol { list-style: decimal; }
         .rich-content blockquote { border-left: 3px solid #d4d4d8; padding-left: 0.75rem; color: #52525b; }
+        .rich-content figure { margin: 1rem 0; }
+        .rich-content iframe { aspect-ratio: 16 / 9; width: 100%; border: 0; border-radius: 0.75rem; }
+        .rich-content table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.875rem; }
+        .rich-content th, .rich-content td { border: 1px solid #e4e4e7; padding: 0.5rem; text-align: left; }
+        .ck-editor__editable { min-height: 14rem; }
+        .ck-content img { max-width: 100%; }
     </style>
     @stack('head')
 </head>

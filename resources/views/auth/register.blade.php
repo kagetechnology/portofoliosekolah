@@ -63,6 +63,11 @@
 
             <form method="POST" action="{{ route('register') }}" class="space-y-4">
                 @csrf
+                <div class="space-y-1.5">
+                    <label class="block text-sm font-medium text-zinc-800">NISN</label>
+                    <input name="nisn" value="{{ old('nisn') }}" required inputmode="numeric" minlength="10" maxlength="10"
+                           class="w-full rounded-lg border border-zinc-200 px-3 py-2.5 text-sm transition focus:border-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900/10">
+                </div>
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div class="space-y-1.5 sm:col-span-2">
                         <label class="block text-sm font-medium text-zinc-800">Nama Lengkap</label>

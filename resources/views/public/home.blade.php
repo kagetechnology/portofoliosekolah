@@ -9,11 +9,11 @@
         <div class="mb-8 flex items-center gap-2 text-xs text-zinc-500">
             <a href="{{ route('home') }}" class="hover:text-blue-600">Beranda</a>
             <span>&rarr;</span>
-            <span class="text-zinc-700">{{ \App\Models\School::current()?->name }}</span>
+            <span class="text-zinc-700">{{ $school?->name }}</span>
             <span class="ml-auto text-right">
                 <x-badge variant="success">
                     <span class="block h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-                    {{ \App\Models\Portfolio::count() }} karya dipublikasi
+                    {{ $stats['portfolios'] }} karya dipublikasi
                 </x-badge>
             </span>
         </div>
@@ -174,7 +174,7 @@
                     <x-empty-state name="briefcase" title="Belum ada portofolio"
                         description="Siswa akan menambahkan karyanya di sini. Pantau terus halaman ini.">
                         <x-slot:actions>
-                            <x-button href="{{ route('register') }}" variant="primary" size="sm">
+                            <x-button href="{{ route('login') }}" variant="primary" size="sm">
                                 Daftar sebagai siswa
                             </x-button>
                         </x-slot:actions>

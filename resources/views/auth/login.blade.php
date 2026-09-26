@@ -66,8 +66,9 @@
             <form method="POST" action="{{ route('login') }}" class="space-y-4">
                 @csrf
                 <div class="space-y-1.5">
-                    <label class="block text-sm font-medium text-zinc-800">Email</label>
-                    <input type="email" name="email" value="{{ old('email') }}" required autofocus
+                    <label class="block text-sm font-medium text-zinc-800">NISN / Email Admin</label>
+                    <input type="text" name="login" value="{{ old('login') }}" required autofocus autocomplete="username"
+                           placeholder="NISN siswa atau email admin"
                            class="w-full rounded-lg border border-zinc-200 px-3 py-2.5 text-sm transition focus:border-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900/10">
                 </div>
                 <div class="space-y-1.5">
@@ -88,9 +89,7 @@
                 <span class="h-px flex-1 bg-zinc-200"></span>
             </div>
 
-            <p class="text-center text-sm text-zinc-600">
-                Belum punya akun? <a href="{{ route('register') }}" class="font-medium text-blue-600 hover:underline">Daftar sebagai siswa</a>
-            </p>
+            <p class="text-center text-sm text-zinc-600">Akun siswa disediakan oleh admin sekolah.</p>
 
             <p class="mt-8 text-center text-xs text-zinc-400 md:hidden">
                 <a href="{{ route('home') }}" class="hover:text-zinc-700">&larr; Kembali ke beranda</a>

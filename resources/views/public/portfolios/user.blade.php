@@ -61,6 +61,16 @@
                                         <x-icon name="instagram" class="h-4 w-4" /> Instagram
                                     </a>
                                 @endif
+                                @if ($user->email)
+                                    <a href="mailto:{{ $user->email }}" class="flex items-center gap-2 text-zinc-600 hover:text-blue-600">
+                                        <x-icon name="mail" class="h-4 w-4" /> {{ $user->email }}
+                                    </a>
+                                @endif
+                                @if ($user->linkedin_url)
+                                    <a href="{{ $user->linkedin_url }}" target="_blank" rel="noopener" class="flex items-center gap-2 text-zinc-600 hover:text-blue-600">
+                                        LinkedIn
+                                    </a>
+                                @endif
                             </div>
                             <div class="mt-4 flex flex-wrap gap-2">
                                 <a href="{{ route('contact.create') }}?subject=Penawaran untuk {{ urlencode($user->name) }}"
@@ -69,6 +79,9 @@
                                 </a>
                                 <a href="{{ route('portfolios.index') }}" class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-800 transition hover:bg-zinc-50">
                                     <x-icon name="briefcase" class="h-4 w-4" /> Karya Siswa Lain
+                                </a>
+                                <a href="{{ route('students.cv', $user) }}" target="_blank" class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-800 transition hover:bg-zinc-50">
+                                    <x-icon name="download" class="h-4 w-4" /> Print CV
                                 </a>
                             </div>
                         </div>

@@ -19,6 +19,16 @@
 
     <main id="main" class="mx-auto max-w-7xl px-4 pb-12 pt-6 md:pt-10 lg:px-8">
 
+        @if ($isPreview)
+            <div class="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-950">
+                <div>
+                    <p class="font-semibold">Mode preview</p>
+                    <p class="mt-1 text-xs text-amber-800">Karya ini belum tampil untuk publik. Hanya pengguna yang login dan memiliki link ini yang dapat melihatnya.</p>
+                </div>
+                <x-badge variant="warning">{{ ucfirst($portfolio->approval_status) }}</x-badge>
+            </div>
+        @endif
+
         <nav class="mb-4 text-xs text-zinc-500">
             <a href="{{ route('home') }}" class="hover:text-blue-600">Beranda</a>
             <span class="mx-1">/</span>
@@ -36,7 +46,10 @@
                 </div>
 
                 <div class="mt-6">
-                    <x-badge variant="info">{{ $portfolio->category ?? 'Tanpa Kategori' }}</x-badge>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <x-badge variant="info">{{ $portfolio->category ?? 'Tanpa Kategori' }}</x-badge>
+                        <x-badge :variant="$portfolio->project_type === 'team' ? 'success' : 'neutral'">{{ $portfolio->project_type === 'team' ? 'Project Tim' : 'Project Personal' }}</x-badge>
+                    </div>
                     <h1 class="font-display mt-3 text-2xl font-bold leading-tight tracking-tight text-zinc-900 md:text-4xl">
                         {{ $portfolio->title }}
                     </h1>
@@ -55,14 +68,22 @@
                         <span class="inline-flex items-center gap-1 text-zinc-500" title="{{ $portfolio->views }} kali dilihat">
                             <x-icon name="eye" class="h-4 w-4" /> {{ $portfolio->views ?: 0 }}x dilihat
                         </span>
+                        @if ($portfolio->ratings_count)
+                            <span class="text-zinc-300">·</span>
+                            <span class="inline-flex items-center gap-1 text-zinc-500"><x-icon name="star" class="h-4 w-4" /> {{ number_format($portfolio->ratings_avg_rating, 1) }}/5 dari {{ $portfolio->ratings_count }} guru</span>
+                        @endif
                     </div>
 
                     <div class="rich-content mt-6 max-w-none text-base leading-relaxed text-zinc-700">
                         {!! \App\Support\RichText::clean($portfolio->description) !!}
                     </div>
 
-                    @if ($portfolio->project_url || $portfolio->github_url)
-                        <div class="mt-6 flex flex-wrap gap-2">
+                    <div class="mt-6 flex flex-wrap gap-2">
+                            <button type="button" data-share-url="{{ $isPreview ? request()->fullUrl() : route('portfolios.show', $portfolio) }}" data-share-title="{{ $portfolio->title }}" data-share-text="Lihat {{ $isPreview ? 'preview ' : '' }}project {{ $portfolio->title }} karya {{ $portfolio->user->name }}"
+                                    class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-800 transition hover:bg-zinc-50">
+                                <x-icon name="external" class="h-4 w-4" /> Bagikan
+                            </button>
+                        @if ($portfolio->project_url || $portfolio->github_url)
                             @if ($portfolio->project_url)
                                 <a href="{{ $portfolio->project_url }}" target="_blank" rel="noopener"
                                    class="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-800">
@@ -75,8 +96,8 @@
                                     <x-icon name="github" class="h-4 w-4" /> Repository
                                 </a>
                             @endif
-                        </div>
-                    @endif
+                        @endif
+                    </div>
 
                     @if ($portfolio->skills->count())
                         <div class="mt-8 border-t border-zinc-100 pt-6">
@@ -148,6 +169,23 @@
                         Lihat semua karya <x-icon name="arrow-right" class="h-4 w-4" />
                     </a>
                 </div>
+
+                @if ($portfolio->project_type === 'team' && $portfolio->acceptedContributors->count())
+                    <div class="rounded-2xl border border-zinc-200 bg-white p-5">
+                        <p class="text-xs font-semibold uppercase tracking-widest text-zinc-500">Kontributor Tim</p>
+                        <div class="mt-3 space-y-3">
+                            @foreach ($portfolio->acceptedContributors as $contributor)
+                                <a href="{{ route('portfolios.user', $contributor) }}" class="flex items-center gap-3 rounded-xl p-2 transition hover:bg-zinc-50">
+                                    <img src="{{ $contributor->avatarUrl() }}" alt="" class="h-10 w-10 rounded-xl object-cover ring-1 ring-zinc-200">
+                                    <span class="min-w-0">
+                                        <span class="block truncate text-sm font-semibold text-zinc-900">{{ $contributor->name }}</span>
+                                        <span class="block truncate text-xs text-zinc-500">{{ $contributor->school_class ?: 'Siswa' }}</span>
+                                    </span>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
 
                 <div class="rounded-2xl border border-blue-100 bg-blue-50/60 p-5">
                     <p class="text-xs font-semibold uppercase tracking-widest text-blue-700">Untuk Perusahaan</p>

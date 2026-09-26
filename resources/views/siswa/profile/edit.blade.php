@@ -2,9 +2,9 @@
 @section('title', 'Edit Profil')
 
 @section('content')
-    <header class="mb-6">
-        <p class="text-xs font-semibold uppercase tracking-widest text-blue-600">Akun</p>
-        <h1 class="font-display text-3xl font-bold tracking-tight text-zinc-900">Edit Profil</h1>
+    <header class="mb-6 rounded-[2rem] border border-zinc-200 bg-white p-6 shadow-sm">
+        <p class="text-xs font-semibold uppercase tracking-[0.28em] text-blue-600">Akun</p>
+        <h1 class="font-display mt-3 text-4xl font-bold tracking-tight text-zinc-950 md:text-5xl">Edit Profil</h1>
         <p class="mt-1 text-sm text-zinc-500">
             Profil publik:
             <a href="{{ route('portfolios.user', $user) }}" target="_blank" class="text-blue-600 hover:underline">/siswa/{{ $user->slug }}</a>
@@ -16,10 +16,10 @@
         @csrf @method('PUT')
 
         <div class="space-y-5 lg:col-span-2">
-            <section class="rounded-2xl border border-zinc-200 bg-white p-6">
+            <section class="rounded-[1.75rem] border border-zinc-200 bg-white p-6 shadow-sm">
                 <h2 class="mb-4 text-sm font-semibold uppercase tracking-wider text-zinc-500">Identitas</h2>
                 <p class="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-                    Nama, kelas, dan no. telepon hanya bisa diubah oleh admin sekolah.
+                    Nama, kelas, dan no. telepon hanya bisa diubah oleh admin sekolah. Email bisa Anda ubah sendiri.
                 </p>
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div class="space-y-1.5 sm:col-span-2">
@@ -44,13 +44,14 @@
                     </div>
                     <div class="space-y-1.5 sm:col-span-2">
                         <label class="block text-sm font-medium text-zinc-800">Email</label>
-                        <input type="email" value="{{ $user->email }}" disabled
-                               class="w-full cursor-not-allowed rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2.5 text-sm text-zinc-500">
+                        <input name="email" type="email" value="{{ old('email', $user->email) }}" required
+                               class="w-full rounded-lg border border-zinc-200 px-3 py-2.5 text-sm focus:border-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 @error('email') border-red-400 @enderror">
+                        @error('email') <p class="text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
                 </div>
             </section>
 
-            <section class="rounded-2xl border border-zinc-200 bg-white p-6">
+            <section class="rounded-[1.75rem] border border-zinc-200 bg-white p-6 shadow-sm">
                 <h2 class="mb-4 text-sm font-semibold uppercase tracking-wider text-zinc-500">Deskripsi</h2>
                 <div class="space-y-1.5">
                     <label class="block text-sm font-medium text-zinc-800">Bio / Deskripsi Diri</label>
@@ -60,7 +61,7 @@
                 </div>
             </section>
 
-            <section class="rounded-2xl border border-zinc-200 bg-white p-6">
+            <section class="rounded-[1.75rem] border border-zinc-200 bg-white p-6 shadow-sm">
                 <h2 class="mb-4 text-sm font-semibold uppercase tracking-wider text-zinc-500">Tautan Sosial</h2>
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div class="space-y-1.5">
@@ -81,12 +82,19 @@
                                class="w-full rounded-lg border border-zinc-200 px-3 py-2.5 text-sm focus:border-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 @error('instagram_url') border-red-400 @enderror">
                         @error('instagram_url') <p class="text-xs text-red-600">{{ $message }}</p> @enderror
                     </div>
+                    <div class="space-y-1.5 sm:col-span-2">
+                        <label class="block text-sm font-medium text-zinc-800">LinkedIn</label>
+                        <input name="linkedin_url" type="url" value="{{ old('linkedin_url', $user->linkedin_url) }}"
+                               placeholder="https://www.linkedin.com/in/username"
+                               class="w-full rounded-lg border border-zinc-200 px-3 py-2.5 text-sm focus:border-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 @error('linkedin_url') border-red-400 @enderror">
+                        @error('linkedin_url') <p class="text-xs text-red-600">{{ $message }}</p> @enderror
+                    </div>
                 </div>
             </section>
         </div>
 
         <div class="space-y-5">
-            <section class="rounded-2xl border border-zinc-200 bg-white p-6">
+            <section class="rounded-[1.75rem] border border-zinc-200 bg-white p-6 shadow-sm">
                 <h2 class="mb-4 text-sm font-semibold uppercase tracking-wider text-zinc-500">Foto Profil</h2>
                 <div class="flex flex-col items-center text-center">
                     <div class="relative">
@@ -98,7 +106,7 @@
                             <input type="file" name="avatar" accept="image/*" data-image-preview-input="#avatar-preview" class="sr-only">
                         </label>
                     </div>
-                    <p class="mt-4 text-xs text-zinc-500">JPG/PNG/WebP, maks 2MB.</p>
+                    <p class="mt-4 text-xs text-zinc-500">JPG/PNG/WebP hingga 5MB (otomatis dikompresi).</p>
                     @error('avatar') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
 
                     @if ($user->avatar)

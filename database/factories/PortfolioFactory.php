@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\Portfolio;
-use App\Models\Skill;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
@@ -46,13 +45,11 @@ class PortfolioFactory extends Factory
     ];
 
     private array $descriptions = [
-        'Aplikasi yang dibuat untuk memenuhi tugas akhir. Fitur lengkap dengan CRUD, authentication, dan dashboard admin.',
-        'Project pribadi untuk mengasah skill. Memakai best practice dan struktur kode yang clean.',
-        'Kerja sama dengan teman sekelas untuk membuat sistem ini. Bertanggung jawab pada bagian backend dan database.',
-        'Implementasi dari pembelajaran di kelas. Fokus pada UX yang responsif di semua device.',
-        'Build dengan stack modern. Performa cepat, accessibility-friendly, dan SEO-ready.',
-        'Project eksplorasi AI dan machine learning. Dataset diambil dari Kaggle, model dilatih dengan TensorFlow.',
-        'Solusi digital untuk UMKM sekitar sekolah. Digunakan oleh 10+商家 aktif setiap hari.',
+        'Aplikasi ini dikembangkan untuk memenuhi tugas akhir kejuruan dengan menerapkan standar industri modern. Fitur lengkap mencakup autentikasi multi-peran, manajemen data berbasis CRUD yang aman, pelaporan interaktif, dan antarmuka responsif yang ramah pengguna. Seluruh alur sistem telah diuji fungsionalitasnya agar siap dipakai oleh pengguna akhir.',
+        'Project pribadi yang dirancang secara mandiri untuk mengasah penguasaan arsitektur kode bersih dan best practice industri. Memanfaatkan teknologi modern dengan performa tinggi, validasi input berlapis, serta pengolahan data terstruktur. Dokumentasi teknis dan alur antarmuka disusun rapi agar mudah dipelajari serta dikembangkan lebih lanjut.',
+        'Karya kolaborasi bersama tim untuk menyelesaikan permasalahan operasional nyata di lingkungan sekolah. Tim bertanggung jawab mulai dari perancangan skema basis data, pembuatan REST API terintegrasi, hingga integrasi antarmuka yang intuitif. Melalui pembagian tugas yang terstruktur, proyek ini berhasil diselesaikan sesuai tenggat waktu yang ditetapkan.',
+        'Implementasi nyata dari materi kejuruan dengan fokus pada pengalaman pengguna (UX) yang cepat dan adaptif di berbagai perangkat. Aplikasi dilengkapi dengan sistem pencarian instan, validasi formulir terpadu, dan integrasi media dokumentasi yang memudahkan pengguna dalam meninjau detail karya secara menyeluruh.',
+        'Solusi perangkat lunak yang dibangun menggunakan stack modern berorientasi performa tinggi dan ramah aksesibilitas. Menyediakan alur kerja digital yang efisien, pelaporan data real-time, serta struktur kode modular yang mudah diuji. Karya ini menjadi sarana pembuktian kompetensi teknis yang relevan dengan kebutuhan industri masa kini.',
     ];
 
     private array $categories = ['Web', 'Mobile', 'Desktop', 'IoT', 'UI/UX', 'Data', 'Game', 'API'];

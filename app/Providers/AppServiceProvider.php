@@ -24,9 +24,9 @@ class AppServiceProvider extends ServiceProvider
         // Login: 5 attempts per email+ip per minute
         RateLimiter::for('login', function (Request $request) {
             return [
-                Limit::perMinute(5)->by($request->string('email')->lower()->append('|'.$request->ip())->toString())
-                    ->response(fn () => back()->withErrors(['email' => 'Terlalu banyak percobaan. Coba lagi nanti.'])
-                        ->withInput(['email' => $request->input('email')])),
+                Limit::perMinute(5)->by($request->string('login')->lower()->append('|'.$request->ip())->toString())
+                    ->response(fn () => back()->withErrors(['login' => 'Terlalu banyak percobaan. Coba lagi nanti.'])
+                        ->withInput(['login' => $request->input('login')])),
             ];
         });
 

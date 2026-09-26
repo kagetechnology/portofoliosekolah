@@ -26,14 +26,18 @@ class CertificateController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        return view('admin.certificates.index', compact('certificates', 'q', 'status'));
+        $routePrefix = $request->user()->isGuru() ? 'guru' : 'admin';
+
+        return view('admin.certificates.index', compact('certificates', 'q', 'status', 'routePrefix'));
     }
 
-    public function show(Certificate $certificate): View
+    public function show(Request $request, Certificate $certificate): View
     {
         $certificate->load('user');
 
-        return view('admin.certificates.show', compact('certificate'));
+        $routePrefix = $request->user()->isGuru() ? 'guru' : 'admin';
+
+        return view('admin.certificates.show', compact('certificate', 'routePrefix'));
     }
 
     public function approve(Certificate $certificate): RedirectResponse
